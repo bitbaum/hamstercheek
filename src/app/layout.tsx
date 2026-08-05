@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "HamsterCheek",
-  description: "Started from FleetCrown · HamsterCheek",
+  description: "Store and find your valuables, off the grid.",
 };
 
 export default function RootLayout({
