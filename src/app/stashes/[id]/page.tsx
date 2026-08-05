@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { stashes } from "@/db/schema";
 import { formatCoordinates } from "@/lib/coordinates";
 import StashLocationMap from "@/components/StashLocationMap";
+import DeleteStashButton from "@/components/DeleteStashButton";
 
 export default async function StashDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -26,9 +27,12 @@ export default async function StashDetailPage({ params }: { params: Promise<{ id
         &larr; All stashes
       </Link>
 
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">{stash.name}</h1>
-        <p className="text-sm text-muted-foreground">{formatCoordinates({ lat: stash.lat, lng: stash.lng })}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">{stash.name}</h1>
+          <p className="text-sm text-muted-foreground">{formatCoordinates({ lat: stash.lat, lng: stash.lng })}</p>
+        </div>
+        <DeleteStashButton id={stash.id} name={stash.name} />
       </div>
 
       {stash.description && <p className="text-sm">{stash.description}</p>}

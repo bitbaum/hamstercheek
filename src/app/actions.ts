@@ -1,8 +1,9 @@
 "use server";
 
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
+import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { stashes } from "@/db/schema";
@@ -47,4 +48,14 @@ export async function createStash(_prevState: CreateStashState, formData: FormDa
     .returning({ id: stashes.id });
 
   redirect(`/stashes/${inserted.id}`);
+}
+
+export async function deleteStash(id: number): Promise<void> {
+  const [deleted] = await db.delete(stashes).where(eq(stashes.id, id)).returning({ photoUrl: stashes.photoUrl });
+
+  if (deleted?.photoUrl) {
+    await unlink(path.join(process.cwd(), "public", deleted.photoUrl)).catch(() => {});
+  }
+
+  redirect("/");
 }
