@@ -1,0 +1,69 @@
+name: CI
+
+# Nothing has ever run this repo's checks. `npm run verify` (typecheck + lint +
+# vitest) existed from the seed commit and was only ever run by hand, which for
+# an agent-built project means: not run. This is the gate that makes it real,
+# and it is also what lets auto-merge work at all — the sweep refuses to merge a
+# PR with zero checks, so without CI nothing here could ever ship itself.
+
+on:
+  # Load-bearing for the merge train: a merge made by auto-merge.yml uses the
+  # default GITHUB_TOKEN, and a push made with that token does NOT trigger
+  # workflows. The sweep dispatches this explicitly afterwards to verify the
+  # merge on main; without this trigger that re-arm silently fails.
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    # `next build` needs a real database. The home page reads DATABASE_URL at
+    # module scope, so page-data collection dies with "DATABASE_URL is not set"
+    # on a bare runner — verified before writing this. A schema-only Postgres is
+    # enough: the build only needs the queries to run, not to return rows.
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: hamstercheek
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+
+    env:
+      DATABASE_URL: postgres://postgres:ci@localhost:5432/hamstercheek
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # ONE canonical bundle — the exact `npm run verify` you run locally, so a
+      # green local verify cannot diverge from a green CI. Needs no database:
+      # the unit tests are pure.
+      - name: Verify (typecheck + lint + test)
+        run: npm run verify
+
+      - name: Apply migrations (the build queries this DB)
+        run: npm run db:migrate
+
+      # Catches the class verify cannot: code that typechecks but fails to
+      # compile or blows up while Next collects page data.
+      - name: Build
+        run: npm run build
