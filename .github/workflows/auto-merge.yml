@@ -38,6 +38,15 @@ permissions:
   contents: write # merge the PR
   pull-requests: write # read PR state, delete the branch
   actions: write # dispatch the re-arm workflows
+  # Required because THIS repo is private. The sweep reads statusCheckRollup to
+  # decide whether a PR is green; a public repo answers that with no explicit
+  # scope, which is why the copy of this file going around the fleet omits these
+  # two lines and still works in ~20 public repos. On a private repo the same
+  # query fails with 'Resource not accessible by integration' and the sweep
+  # merges nothing, ever — see ivy-portal, where that went unnoticed because a
+  # repo that merges nothing looks like a repo with nothing to merge.
+  checks: read # check-run conclusions (CI jobs)
+  statuses: read # commit statuses (external reporters)
 
 # Never let two sweeps merge concurrently — they would race on the same PRs.
 concurrency:
