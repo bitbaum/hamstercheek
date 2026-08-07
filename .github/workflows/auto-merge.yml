@@ -1,0 +1,73 @@
+# Auto-merge — nobody is in the merge loop.
+#
+# Green, ready PRs merge themselves and deploy themselves. The owner does not
+# review PRs, and background-job agent sessions are barred from merging by hand,
+# so the policy lives in scripts/ci/auto-merge-sweep.sh (read it — it defines
+# exactly what "ready" means and how a PR is held back).
+#
+# Two triggers, deliberately:
+#   workflow_run — merges within seconds of CI going green (the common path).
+#   schedule     — a safety net. Catches PRs whose checks finished while this
+#                  workflow was failing/disabled, and PRs whose last check was
+#                  an external status that reported after CI. Without it, a PR
+#                  that went green "off-cycle" waits forever.
+#
+# To stop all of this: delete this file, or add a `hold` label to a PR.
+
+name: Auto-merge
+
+on:
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+  # HOURLY, not */10 as in the rest of the fleet — this repo is PRIVATE, so
+  # Actions minutes are billed. Every other repo running this sweep is public,
+  # where scheduled runs are free. At */10 the safety net alone would burn
+  # ~4,300 billed minutes a month (144 runs/day, each rounded up to a minute)
+  # against a 2,000-minute free allowance, and it would spend most of them
+  # discovering there are no PRs. Hourly costs ~720.
+  #
+  # This barely slows anything down: the schedule is only the safety net. The
+  # common path is workflow_run above, which fires within seconds of CI going
+  # green. Make this repo public and */10 becomes free again.
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write # merge the PR
+  pull-requests: write # read PR state, delete the branch
+  actions: write # dispatch the re-arm workflows
+  # Required because THIS repo is private. The sweep reads statusCheckRollup to
+  # decide whether a PR is green; a public repo answers that with no explicit
+  # scope, which is why the copy of this file going around the fleet omits these
+  # two lines and still works in ~20 public repos. On a private repo the same
+  # query fails with 'Resource not accessible by integration' and the sweep
+  # merges nothing, ever — see ivy-portal, where that went unnoticed because a
+  # repo that merges nothing looks like a repo with nothing to merge.
+  checks: read # check-run conclusions (CI jobs)
+  statuses: read # commit statuses (external reporters)
+
+# Never let two sweeps merge concurrently — they would race on the same PRs.
+concurrency:
+  group: auto-merge
+  cancel-in-progress: false
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Merge every green, ready PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          BASE_BRANCH: ${{ github.event.repository.default_branch }}
+          CI_WORKFLOW: ci.yml
+          # Everything that runs on push and therefore would NOT fire after a
+          # merge made with the default GITHUB_TOKEN. Keep this in sync when a
+          # push-triggered workflow is added.
+          REARM_WORKFLOWS: ci.yml
+        run: bash scripts/ci/auto-merge-sweep.sh
