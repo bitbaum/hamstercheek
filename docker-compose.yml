@@ -1,0 +1,44 @@
+# HamsterCheek — full stack: Postgres + the Next.js app.
+#
+#   cp .env.docker.example .env   # then set a strong POSTGRES_PASSWORD
+#   docker compose up -d --build
+#
+# The app applies migrations on startup, so the database is schema-ready on the
+# first boot with no extra step.
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-hamster}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-hamstercheek}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    # Not published to the host: only the app container reaches the database.
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-hamster} -d ${POSTGRES_DB:-hamstercheek}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-hamster}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-hamstercheek}
+      NODE_ENV: production
+    ports:
+      # Bind to localhost only and terminate TLS with a reverse proxy in front.
+      - '${APP_PORT:-3000}:3000'
+    volumes:
+      # Persist uploaded photos across container rebuilds.
+      - uploads:/app/public/uploads
+
+volumes:
+  db-data:
+  uploads:

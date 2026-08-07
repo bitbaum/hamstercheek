@@ -1,0 +1,22 @@
+node_modules
+.next
+.git
+.github
+npm-debug.log*
+
+# Never bake secrets or local overrides into the image. Critically, the DB layer
+# loads .env.local with override:true — if it leaked into the image it would win
+# over the runtime DATABASE_URL and point the container at the wrong database.
+.env
+.env.local
+.env.*.local
+
+# Build/deploy scaffolding the image doesn't need
+Dockerfile
+.dockerignore
+docker-compose.yml
+*.md
+
+# Uploaded photos live in a runtime volume, not the image
+public/uploads/*
+!public/uploads/.gitkeep
