@@ -6,11 +6,7 @@ export const metadata: Metadata = {
   description: "Store and find your valuables, off the grid.",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className="antialiased">{children}</body>

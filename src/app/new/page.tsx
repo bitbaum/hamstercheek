@@ -58,7 +58,9 @@ export default function NewStashPage() {
 
         <div className="flex flex-col gap-2">
           <span className="text-sm font-medium">Location</span>
-          <p className="text-xs text-muted-foreground">Click the map to drop a pin where the box is buried or hidden.</p>
+          <p className="text-xs text-muted-foreground">
+            Click the map to drop a pin where the box is buried or hidden.
+          </p>
           <MapPicker value={coords} onChange={setCoords} />
           <p className="text-xs text-muted-foreground">
             {coords ? formatCoordinates(coords) : "No location selected yet"}
