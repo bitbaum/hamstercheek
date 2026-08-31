@@ -14,7 +14,10 @@ const ALLOWED_PHOTO_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 export type CreateStashState = { error?: string };
 
-export async function createStash(_prevState: CreateStashState, formData: FormData): Promise<CreateStashState> {
+export async function createStash(
+  _prevState: CreateStashState,
+  formData: FormData,
+): Promise<CreateStashState> {
   const name = String(formData.get("name") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const lat = Number(formData.get("lat"));
@@ -34,7 +37,8 @@ export async function createStash(_prevState: CreateStashState, formData: FormDa
     if (!ALLOWED_PHOTO_TYPES.has(photo.type)) {
       return { error: "Photo must be a JPEG, PNG, or WebP image." };
     }
-    const extension = photo.type === "image/png" ? "png" : photo.type === "image/webp" ? "webp" : "jpg";
+    const extension =
+      photo.type === "image/png" ? "png" : photo.type === "image/webp" ? "webp" : "jpg";
     const filename = `${randomUUID()}.${extension}`;
     await mkdir(UPLOADS_DIR, { recursive: true });
     const bytes = Buffer.from(await photo.arrayBuffer());
@@ -51,7 +55,10 @@ export async function createStash(_prevState: CreateStashState, formData: FormDa
 }
 
 export async function deleteStash(id: number): Promise<void> {
-  const [deleted] = await db.delete(stashes).where(eq(stashes.id, id)).returning({ photoUrl: stashes.photoUrl });
+  const [deleted] = await db
+    .delete(stashes)
+    .where(eq(stashes.id, id))
+    .returning({ photoUrl: stashes.photoUrl });
 
   if (deleted?.photoUrl) {
     await unlink(path.join(process.cwd(), "public", deleted.photoUrl)).catch(() => {});

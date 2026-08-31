@@ -18,7 +18,7 @@ name: Auto-merge
 
 on:
   workflow_run:
-    workflows: ['CI']
+    workflows: ["CI"]
     types: [completed]
   # HOURLY, not */10 as in the rest of the fleet — this repo is PRIVATE, so
   # Actions minutes are billed. Every other repo running this sweep is public,
@@ -31,7 +31,7 @@ on:
   # common path is workflow_run above, which fires within seconds of CI going
   # green. Make this repo public and */10 becomes free again.
   schedule:
-    - cron: '0 * * * *'
+    - cron: "0 * * * *"
   workflow_dispatch: {}
 
 permissions:

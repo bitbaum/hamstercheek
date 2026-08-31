@@ -30,7 +30,9 @@ export default async function StashDetailPage({ params }: { params: Promise<{ id
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{stash.name}</h1>
-          <p className="text-sm text-muted-foreground">{formatCoordinates({ lat: stash.lat, lng: stash.lng })}</p>
+          <p className="text-sm text-muted-foreground">
+            {formatCoordinates({ lat: stash.lat, lng: stash.lng })}
+          </p>
         </div>
         <DeleteStashButton id={stash.id} name={stash.name} />
       </div>

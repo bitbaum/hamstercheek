@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { formatCoordinates, isValidCoordinates, isValidLatitude, isValidLongitude } from "./coordinates";
+import {
+  formatCoordinates,
+  isValidCoordinates,
+  isValidLatitude,
+  isValidLongitude,
+} from "./coordinates";
 
 describe("isValidLatitude", () => {
   it("accepts values within -90..90", () => {

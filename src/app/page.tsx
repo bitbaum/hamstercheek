@@ -38,7 +38,9 @@ export default async function Home() {
               >
                 <div>
                   <p className="font-medium">{item.name}</p>
-                  <p className="text-xs text-muted-foreground">{formatCoordinates({ lat: item.lat, lng: item.lng })}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {formatCoordinates({ lat: item.lat, lng: item.lng })}
+                  </p>
                 </div>
                 {item.photoUrl && (
                   <span className="h-12 w-12 shrink-0 overflow-hidden rounded-[var(--radius-token)] border border-border">
