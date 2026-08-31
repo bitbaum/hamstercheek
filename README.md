@@ -7,7 +7,7 @@ Drop a pin on a map, add a note and a photo, and always know where a stash is.
 
 ## Stack
 
-- [Next.js 15](https://nextjs.org) (App Router, Server Components, Server Actions)
+- [Next.js 16](https://nextjs.org) (App Router, Server Components, Server Actions)
 - Postgres via [Drizzle ORM](https://orm.drizzle.team)
 - [Leaflet](https://leafletjs.com) + OpenStreetMap for the map picker (no API key needed)
 - [Tailwind CSS v4](https://tailwindcss.com)
