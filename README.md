@@ -18,11 +18,11 @@ Drop a pin on a map, add a note and a photo, and always know where a stash is.
 ```bash
 git clone <this-repo-url>
 cd HamsterCheek
-npm install
+pnpm install
 cp .env.example .env.local   # fill in DATABASE_URL
-npm run db:generate          # generate SQL migrations from src/db/schema.ts
-npm run db:migrate           # apply them
-npm run dev
+pnpm run db:generate          # generate SQL migrations from src/db/schema.ts
+pnpm run db:migrate           # apply them
+pnpm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
@@ -51,7 +51,7 @@ deployment, not for anything horizontally scaled or ephemeral-filesystem hosted.
 
 ## What's next
 
-- Auth: `npm install next-auth@beta` + scope stashes to a user
+- Auth: `pnpm add next-auth@beta` + scope stashes to a user
 - Move photo storage to an object store (S3, R2) instead of local disk
 - Deploy: self-host behind a reverse proxy (build, then run `next start` on your server)
 

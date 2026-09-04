@@ -1,6 +1,7 @@
 {
   "name": "HamsterCheek",
   "version": "0.1.0",
+  "packageManager": "pnpm@11.25.0",
   "engines": {
     "node": ">=20"
   },
@@ -12,7 +13,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "verify": "npm run format:check && npm run typecheck && npm run lint && npm run test",
+    "verify": "pnpm run format:check && pnpm run typecheck && pnpm run lint && pnpm run test",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:studio": "drizzle-kit studio",

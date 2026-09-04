@@ -1,6 +1,6 @@
 name: CI
 
-# Nothing has ever run this repo's checks. `npm run verify` (typecheck + lint +
+# Nothing has ever run this repo's checks. `pnpm run verify` (typecheck + lint +
 # vitest) existed from the seed commit and was only ever run by hand, which for
 # an agent-built project means: not run. This is the gate that makes it real,
 # and it is also what lets auto-merge work at all — the sweep refuses to merge a
@@ -45,25 +45,28 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
           node-version: 22
-          cache: npm
+          cache: pnpm
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
-      # ONE canonical bundle — the exact `npm run verify` you run locally, so a
+      # ONE canonical bundle — the exact `pnpm run verify` you run locally, so a
       # green local verify cannot diverge from a green CI. Needs no database:
       # the unit tests are pure.
       - name: Verify (typecheck + lint + test)
-        run: npm run verify
+        run: pnpm run verify
 
       - name: Apply migrations (the build queries this DB)
-        run: npm run db:migrate
+        run: pnpm run db:migrate
 
       # Catches the class verify cannot: code that typechecks but fails to
       # compile or blows up while Next collects page data.
       - name: Build
-        run: npm run build
+        run: pnpm run build
