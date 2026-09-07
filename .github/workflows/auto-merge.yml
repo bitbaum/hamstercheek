@@ -21,22 +21,22 @@ on:
   workflow_run:
     workflows: ["CI"]
     types: [completed]
-  # HOURLY, not */10 as in the rest of the fleet — this repo is PRIVATE, so
-  # Actions minutes are billed. Every other repo running this sweep is public,
-  # where scheduled runs are free. At */10 the safety net alone would burn
-  # ~4,300 billed minutes a month (144 runs/day, each rounded up to a minute)
-  # against a 2,000-minute free allowance, and it would spend most of them
-  # discovering there are no PRs. Hourly costs ~720.
+  # */10, matching the rest of the fleet.
   #
-  # This barely slows anything down: the schedule is only the safety net. The
-  # common path is workflow_run above, which fires within seconds of CI going
-  # green. Make this repo public and */10 becomes free again.
+  # This was hourly, on the stated grounds that "this repo is PRIVATE, so
+  # Actions minutes are billed" — ~4,300 billed minutes a month at */10 against
+  # a 2,000-minute allowance. The arithmetic was fine; the premise was not.
+  # bitbaum/hamstercheek is PUBLIC (checked against the API on 2026-09-07, along
+  # with every other repo in the org: only go-to-market and lifeops are
+  # private). Scheduled runs on a public repo are free, so the constraint the
+  # hourly cron existed to respect does not exist.
   #
-  # Kept deliberately when this repo moved to the shared sweep: the POLICY is
-  # centralised, the TRIGGERS are not — a uniform cron here would have
-  # multiplied a billed line item by six.
+  # Left as-is, this was the slowest-sweeping repo in the fleet for a reason
+  # that had stopped being true — and the comment asserting it was the evidence
+  # anyone would have trusted. If this repo is ever made private, put the cron
+  # back to "0 * * * *" and restore the arithmetic above.
   schedule:
-    - cron: "0 * * * *"
+    - cron: "*/10 * * * *"
   workflow_dispatch: {}
 
 # Declared on the CALLER as well as inside the reusable workflow: a called
@@ -48,7 +48,7 @@ permissions:
   contents: write # merge the PR
   pull-requests: write # read PR state, delete the branch
   actions: write # dispatch the re-arm
-  checks: read # statusCheckRollup — LOAD-BEARING: this repo is private
+  checks: read # statusCheckRollup — only load-bearing on private repos
   statuses: read
 
 jobs:
