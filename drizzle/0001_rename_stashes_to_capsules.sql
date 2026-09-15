@@ -1,0 +1,1 @@
+ALTER TABLE "stashes" RENAME TO "capsules";

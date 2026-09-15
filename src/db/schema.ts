@@ -1,6 +1,6 @@
 import { pgTable, serial, text, doublePrecision, timestamp } from "drizzle-orm/pg-core";
 
-export const stashes = pgTable("stashes", {
+export const capsules = pgTable("capsules", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description"),
@@ -10,5 +10,5 @@ export const stashes = pgTable("stashes", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export type Stash = typeof stashes.$inferSelect;
-export type NewStash = typeof stashes.$inferInsert;
+export type Capsule = typeof capsules.$inferSelect;
+export type NewCapsule = typeof capsules.$inferInsert;

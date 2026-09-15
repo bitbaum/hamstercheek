@@ -1,11 +1,11 @@
 "use client";
 
-import { deleteStash } from "@/app/actions";
+import { deleteCapsule } from "@/app/actions";
 
-export default function DeleteStashButton({ id, name }: { id: number; name: string }) {
+export default function DeleteCapsuleButton({ id, name }: { id: number; name: string }) {
   return (
     <form
-      action={deleteStash.bind(null, id)}
+      action={deleteCapsule.bind(null, id)}
       onSubmit={(e) => {
         if (!confirm(`Delete "${name}"? This can't be undone.`)) {
           e.preventDefault();
