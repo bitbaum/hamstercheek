@@ -26,7 +26,7 @@ on:
   # This was hourly, on the stated grounds that "this repo is PRIVATE, so
   # Actions minutes are billed" — ~4,300 billed minutes a month at */10 against
   # a 2,000-minute allowance. The arithmetic was fine; the premise was not.
-  # bitbaum/hamstercheek is PUBLIC (checked against the API on 2026-09-07, along
+  # bitbaum/zeitkastli is PUBLIC (checked against the API on 2026-09-07, along
   # with every other repo in the org: only go-to-market and lifeops are
   # private). Scheduled runs on a public repo are free, so the constraint the
   # hourly cron existed to respect does not exist.

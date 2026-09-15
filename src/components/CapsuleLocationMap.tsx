@@ -12,6 +12,6 @@ const MapPicker = dynamic(() => import("@/components/MapPicker"), {
   ),
 });
 
-export default function StashLocationMap({ coords }: { coords: Coordinates }) {
+export default function CapsuleLocationMap({ coords }: { coords: Coordinates }) {
   return <MapPicker value={coords} readOnly />;
 }

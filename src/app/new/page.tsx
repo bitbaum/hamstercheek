@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useActionState, useState } from "react";
-import { createStash } from "@/app/actions";
+import { createCapsule } from "@/app/actions";
 import type { Coordinates } from "@/lib/coordinates";
 import { formatCoordinates } from "@/lib/coordinates";
 
@@ -16,14 +16,14 @@ const MapPicker = dynamic(() => import("@/components/MapPicker"), {
   ),
 });
 
-export default function NewStashPage() {
+export default function NewCapsulePage() {
   const [coords, setCoords] = useState<Coordinates | null>(null);
-  const [state, formAction, isPending] = useActionState(createStash, {});
+  const [state, formAction, isPending] = useActionState(createCapsule, {});
 
   return (
     <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 p-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">Add a stash</h1>
+        <h1 className="text-2xl font-bold tracking-tight">New capsule</h1>
         <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">
           Cancel
         </Link>
@@ -59,7 +59,7 @@ export default function NewStashPage() {
         <div className="flex flex-col gap-2">
           <span className="text-sm font-medium">Location</span>
           <p className="text-xs text-muted-foreground">
-            Click the map to drop a pin where the box is buried or hidden.
+            Click the map to drop a pin on the spot where you placed the capsule.
           </p>
           <MapPicker value={coords} onChange={setCoords} />
           <p className="text-xs text-muted-foreground">
@@ -93,7 +93,7 @@ export default function NewStashPage() {
           disabled={isPending || !coords}
           className="rounded-[var(--radius-token)] bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
         >
-          {isPending ? "Saving…" : "Save stash"}
+          {isPending ? "Saving…" : "Save capsule"}
         </button>
       </form>
     </main>

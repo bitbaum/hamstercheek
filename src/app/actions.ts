@@ -6,18 +6,18 @@ import { randomUUID } from "node:crypto";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
-import { stashes } from "@/db/schema";
+import { capsules } from "@/db/schema";
 import { isValidCoordinates } from "@/lib/coordinates";
 
 const UPLOADS_DIR = path.join(process.cwd(), "public", "uploads");
 const ALLOWED_PHOTO_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
-export type CreateStashState = { error?: string };
+export type CreateCapsuleState = { error?: string };
 
-export async function createStash(
-  _prevState: CreateStashState,
+export async function createCapsule(
+  _prevState: CreateCapsuleState,
   formData: FormData,
-): Promise<CreateStashState> {
+): Promise<CreateCapsuleState> {
   const name = String(formData.get("name") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const lat = Number(formData.get("lat"));
@@ -47,18 +47,18 @@ export async function createStash(
   }
 
   const [inserted] = await db
-    .insert(stashes)
+    .insert(capsules)
     .values({ name, description: description || null, lat, lng, photoUrl })
-    .returning({ id: stashes.id });
+    .returning({ id: capsules.id });
 
-  redirect(`/stashes/${inserted.id}`);
+  redirect(`/capsules/${inserted.id}`);
 }
 
-export async function deleteStash(id: number): Promise<void> {
+export async function deleteCapsule(id: number): Promise<void> {
   const [deleted] = await db
-    .delete(stashes)
-    .where(eq(stashes.id, id))
-    .returning({ photoUrl: stashes.photoUrl });
+    .delete(capsules)
+    .where(eq(capsules.id, id))
+    .returning({ photoUrl: capsules.photoUrl });
 
   if (deleted?.photoUrl) {
     await unlink(path.join(process.cwd(), "public", deleted.photoUrl)).catch(() => {});
